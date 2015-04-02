@@ -14,7 +14,7 @@
         	<ul data-bind='foreach: filteredList'>
             <li>
                 <!-- $parent.currentCat: Here we are passing a “current item” as a parameter to your handler function -->
-                <span data-bind="text: name,click: $parent.showClickedItem"></span>
+                <span data-bind="text: name,click: $parent.showClickedItem, map:map,latitude: lat, longitude:lng, marker:marker"></span>
             </li>
         </ul>
     </div>

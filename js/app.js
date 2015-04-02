@@ -3,7 +3,7 @@ var lat = 37.3708905;
 var lon = -121.9675525;
 var request;
 var m_ViewModel;
-//var markerList;
+//var dataFromServer;
 var markerArray=[];
 var image = 'images/food1.png';
 
@@ -30,7 +30,7 @@ var model = {
 		callback : function(results, status) {
 			if (status == google.maps.places.PlacesServiceStatus.OK) {
 				console.log(results);
-  				markerList = results;
+  				dataFromServer = results;
   			}
 		}
 		// returns array of cats
@@ -45,8 +45,9 @@ var ViewModel = function() {
    // model.init();
    // setTimeout(function() {
       // Do something after 1 second
-		markerList.forEach(function(data){
-			self.dataList.push(new place(data));
+		dataFromServer.forEach(function(data){
+			self.dataList.push(new Location(data));
+			console.log(self.dataList());
 		});
 
 		self.filteredList = ko.computed(function(){
@@ -54,8 +55,25 @@ var ViewModel = function() {
     		if (!filter) {
         		return self.dataList();
     		} else {
-        		return ko.utils.arrayFilter(self.dataList(), function(item) {
-            		return ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
+    			for(var i = 0 ; i < self.dataList().length ; i ++) {
+    				self.dataList()[i].mapMarker().marker().setMap(null);
+    				//console.log(self.dataList()[i].mapMarker().marker())
+    			}
+        		return ko.utils.arrayFilter(self.dataList(), function(data) {
+            	console.log(" item marker : " + data.mapMarker().marker() + data[Location]);
+            		var text = data.name().toLowerCase();
+            		if(text.indexOf(filter) >= 0){
+            			for(var i = 0 ; i < markerArray.length ; i++) {
+							//console.log(markerArray[i].marker());
+							if(markerArray[i].marker() == data.mapMarker().marker())
+							{
+								console.log("I am in");
+								data.mapMarker().marker(markerArray[i].marker());
+							}
+						}
+						return data;
+            		}
+
         		});
     		}
 		});
@@ -63,11 +81,8 @@ var ViewModel = function() {
 
 		// animate marker corresponding to list item when selected
 		self.showClickedItem = function(item) {
-			console.log(item.marker());
 			for(var i = 0 ; i < markerArray.length ; i++) {
-				if(markerArray[i] == item.marker()) {
-					 markerArray[i].setAnimation(google.maps.Animation.DROP);
-				}
+				console.log(markerArray[i].marker());
 			}
         };
 
@@ -76,38 +91,38 @@ var ViewModel = function() {
 	//}, 1500);
 };
 
-var place = function(data) {
-	this.name = ko.observable(data.name);
-    this.address = ko.observable(data.formatted_address);
+var Location = function(data) {
+	var self = this;
+	self.name = ko.observable(data.name);
+    self.address = ko.observable(data.formatted_address);
 
     //TODO
     //uncomment below two lines once start using google maps.
-   // this.lat = ko.observable(data.geometry.location.lat());
-   // this.lng = ko.observable(data.geometry.location.lng());
+   // self.lat = ko.observable(data.geometry.location.lat());
+   // self.lng = ko.observable(data.geometry.location.lng());
     //static data
-    this.lat = ko.observable(data.lat);
-	this.lng = ko.observable(data.lng);
+    self.lat = ko.observable(data.lat);
+	self.lng = ko.observable(data.lng);
+	self.mapMarker = ko.observable(new LocMarker(self));
+};
 
-    this.marker = ko.computed(function(){
-    	    // marker is an object with additional data about the pin for a single location
+var LocMarker = function(parent) {
+	var self = this;
+	self.parent = parent;
+	self.marker = ko.computed(function(){
+    // marker is an object with additional data about the pin for a single location
     	var marker = new google.maps.Marker({
       		map: map,
       		//TODO
       		//position: data.geometry.location,
-      		position : new google.maps.LatLng(data.lat, data.lng),
-      		title: data.name,
+      		position : new google.maps.LatLng(parent.lat(), parent.lng()),
+      		title: parent.name(),
       		icon: image
     	});
-    	markerArray.push(marker);
     	return marker;
-    },this);
-};
-
-ko.bindingHandlers.map = {
-	init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
-		console.log("I am in");
-	}
-};
+    });
+	markerArray.push(self);
+}
 
 $('#searchList').keyup(function(){
     var valThis = $(this).val().toLowerCase();

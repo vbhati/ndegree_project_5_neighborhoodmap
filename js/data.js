@@ -1,4 +1,4 @@
-var markerList = [
+var dataFromServer = [
 	{
 		"formatted_address": "3399 Bowers Avenue, Santa Clara, CA 95054, United States",
 		"name": "Specialty's",
