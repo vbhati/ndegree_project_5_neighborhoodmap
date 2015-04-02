@@ -1,0 +1,14 @@
+#map {
+  display: block;
+  height: 100%;
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 500px;
+  height: 500px;
+}
+
+#mapDiv {
+  height: 400px;
+  width: 100%;
+  padding-bottom: 5%;
+}

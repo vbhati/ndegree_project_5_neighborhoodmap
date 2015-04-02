@@ -1,0 +1,25 @@
+<html>
+<head>
+	<title>Neighborhood Map</title>
+	<link href="css/style.css" rel="stylesheet" type="text/css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="js/lib/knockout-3.2.0.js"></script>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBDiSoZWAGEo03IiUNsxoWt9MXC5bHGNsk&libraries=places"></script>
+</head>
+
+<body>
+	<div id="map"></div>
+
+	 <div>
+        	<ul data-bind='foreach: filteredList'>
+            <li>
+                <!-- $parent.currentCat: Here we are passing a “current item” as a parameter to your handler function -->
+                <span data-bind="text: name,click: $parent.showClickedItem"></span>
+            </li>
+        </ul>
+    </div>
+    <input type="text" data-bind="value: filter, valueUpdate: 'afterkeydown'" />
+	<script src="js/data.js"></script>
+	<script src="js/app.js"></script>
+</body>
+</html>
