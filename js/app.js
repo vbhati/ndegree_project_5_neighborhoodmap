@@ -1,50 +1,47 @@
 var map;
-var lat = 37.3708905;
-var lon = -121.9675525;
-var request;
+var latitude = 37.3708905;
+var longitude = -121.9675525;
 var m_ViewModel;
 //var dataFromServer;
 var markerArray=[];
 var image = 'images/food1.png';
 
 function createMap(){
-    var pyrmont = new google.maps.LatLng(lat,lon);
+    var pyrmont = new google.maps.LatLng(latitude,longitude);
 	map = new google.maps.Map(document.getElementById('map'), {
       center: pyrmont,
       zoom: 15
     });
 };
 
-// Model
 var model = {
-		init: function() {
-			var request = {
-    			location: new google.maps.LatLng(lat,lon),
-    			radius: '500',
-    			query: 'cafe'
-  			};
+	init: function() {
+		var request = {
+    		location: new google.maps.LatLng(latitude,longitude),
+    		radius: '500',
+    		query: 'cafe'
+  		};
 
-			service = new google.maps.places.PlacesService(map);
-			service.textSearch(request,model.callback);
-		},
-		callback : function(results, status) {
-			if (status == google.maps.places.PlacesServiceStatus.OK) {
-				console.log(results);
-  				dataFromServer = results;
-  			}
-		}
-		// returns array of cats
+		service = new google.maps.places.PlacesService(map);
+		service.textSearch(request,model.callback);
+	},
+	callback : function(results, status) {
+		if (status == google.maps.places.PlacesServiceStatus.OK) {
+			console.log(results);
+  			dataFromServer = results;
+  		}
+	}
 }
 
-// Controller
-var ViewModel = function() {
-	var self = this;
-    self.dataList = ko.observableArray([]);
-    self.filter = ko.observable("");
+function processData() {
 
-   // model.init();
-   // setTimeout(function() {
-      // Do something after 1 second
+	// Controller
+	var ViewModel = function() {
+		var self = this;
+	    self.dataList = ko.observableArray([]);
+	    self.filter = ko.observable("");
+	    var clearMap = false;
+
 		dataFromServer.forEach(function(data){
 			self.dataList.push(new Location(data));
 			console.log(self.dataList());
@@ -53,11 +50,19 @@ var ViewModel = function() {
 		self.filteredList = ko.computed(function(){
 			var filter = self.filter().toLowerCase();
     		if (!filter) {
-        		return self.dataList();
+    			if(clearMap == true) {
+    				for(var i = 0 ; i < self.dataList().length ; i ++) {
+    					self.dataList()[i].mapMarker().marker().setMap(map);
+    				}
+    				return self.dataList();
+    			} else {
+    				return self.dataList();
+    			}
     		} else {
     			for(var i = 0 ; i < self.dataList().length ; i ++) {
     				self.dataList()[i].mapMarker().marker().setMap(null);
     				//console.log(self.dataList()[i].mapMarker().marker())
+    				clearMap = true;
     			}
         		return ko.utils.arrayFilter(self.dataList(), function(data) {
             	console.log(" item marker : " + data.mapMarker().marker() + data[Location]);
@@ -67,8 +72,9 @@ var ViewModel = function() {
 							//console.log(markerArray[i].marker());
 							if(markerArray[i].marker() == data.mapMarker().marker())
 							{
-								console.log("I am in");
-								data.mapMarker().marker(markerArray[i].marker());
+								//console.log("I am in");
+								//data.mapMarker().marker(markerArray[i].marker());
+								data.mapMarker().marker().setMap(map);
 							}
 						}
 						return data;
@@ -81,62 +87,56 @@ var ViewModel = function() {
 
 		// animate marker corresponding to list item when selected
 		self.showClickedItem = function(item) {
+			console.log(item.mapMarker().marker());
 			for(var i = 0 ; i < markerArray.length ; i++) {
 				console.log(markerArray[i].marker());
+				if(item.mapMarker().marker() === markerArray[i].marker()) {
+					item.mapMarker().marker().setAnimation(google.maps.Animation.DROP);
+				}
 			}
         };
+	};
 
+	var Location = function(data) {
+		var self = this;
+		self.name = ko.observable(data.name);
+	    self.address = ko.observable(data.formatted_address);
 
+	    //TODO
+	    //uncomment below two lines once start using google maps.
+	    //self.lat = ko.observable(data.geometry.location.lat());
+	    //self.lng = ko.observable(data.geometry.location.lng());
+	    // for static data i.e. when data coming from data.js
+	    self.lat = ko.observable(data.lat);
+		self.lng = ko.observable(data.lng);
+		self.mapMarker = ko.observable(new LocMarker(self));
+	};
 
-	//}, 1500);
-};
+	var LocMarker = function(parent) {
+		var self = this;
+		self.parent = parent;
+		self.marker = ko.computed(function(){
+	    // marker is an object with additional data about the pin for a single location
+	    	var marker = new google.maps.Marker({
+	      		map: map,
+	      		//TODO
+	      		//position: data.geometry.location,
+	      		position : new google.maps.LatLng(parent.lat(), parent.lng()),
+	      		title: parent.name(),
+	      		icon: image
+	    	});
+	    	return marker;
+	    });
+		markerArray.push(self);
+	}
 
-var Location = function(data) {
-	var self = this;
-	self.name = ko.observable(data.name);
-    self.address = ko.observable(data.formatted_address);
-
-    //TODO
-    //uncomment below two lines once start using google maps.
-   // self.lat = ko.observable(data.geometry.location.lat());
-   // self.lng = ko.observable(data.geometry.location.lng());
-    //static data
-    self.lat = ko.observable(data.lat);
-	self.lng = ko.observable(data.lng);
-	self.mapMarker = ko.observable(new LocMarker(self));
-};
-
-var LocMarker = function(parent) {
-	var self = this;
-	self.parent = parent;
-	self.marker = ko.computed(function(){
-    // marker is an object with additional data about the pin for a single location
-    	var marker = new google.maps.Marker({
-      		map: map,
-      		//TODO
-      		//position: data.geometry.location,
-      		position : new google.maps.LatLng(parent.lat(), parent.lng()),
-      		title: parent.name(),
-      		icon: image
-    	});
-    	return marker;
-    });
-	markerArray.push(self);
+	ko.applyBindings(new ViewModel);
 }
-
-$('#searchList').keyup(function(){
-    var valThis = $(this).val().toLowerCase();
-    if(valThis == ""){
-        $('.dlist > li').show();
-    } else {
-        $('.dlist > li').each(function(){
-            var text = $(this).text().toLowerCase();
-            (text.indexOf(valThis) >= 0) ? $(this).show() : $(this).hide();
-        });
-   };
-});
 
 $(document).ready(function () {
    createMap();
-   ko.applyBindings(new ViewModel);
+   model.init();
+   //setTimeout(function() {
+   	processData();
+   //}, 1500);
 });
