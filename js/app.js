@@ -2,7 +2,7 @@ var map;
 var latitude = 37.3708905;
 var longitude = -121.9675525;
 var m_ViewModel;
-//var dataFromServer;
+var dataFromServer;
 var markerArray=[];
 var image = 'images/food1.png';
 
@@ -59,27 +59,15 @@ function processData() {
     				return self.dataList();
     			}
     		} else {
-    			for(var i = 0 ; i < self.dataList().length ; i ++) {
-    				self.dataList()[i].mapMarker().marker().setMap(null);
-    				//console.log(self.dataList()[i].mapMarker().marker())
-    				clearMap = true;
-    			}
-        		return ko.utils.arrayFilter(self.dataList(), function(data) {
-            	console.log(" item marker : " + data.mapMarker().marker() + data[Location]);
+    			return ko.utils.arrayFilter(self.dataList(), function(data) {
+            	//	console.log(" item marker : " + data.mapMarker().marker() + data[Location]);
+            		data.mapMarker().marker().setMap(null);
+            		clearMap = true;
             		var text = data.name().toLowerCase();
             		if(text.indexOf(filter) >= 0){
-            			for(var i = 0 ; i < markerArray.length ; i++) {
-							//console.log(markerArray[i].marker());
-							if(markerArray[i].marker() == data.mapMarker().marker())
-							{
-								//console.log("I am in");
-								//data.mapMarker().marker(markerArray[i].marker());
-								data.mapMarker().marker().setMap(map);
-							}
-						}
+						data.mapMarker().marker().setMap(map);
 						return data;
             		}
-
         		});
     		}
 		});
@@ -104,11 +92,11 @@ function processData() {
 
 	    //TODO
 	    //uncomment below two lines once start using google maps.
-	    //self.lat = ko.observable(data.geometry.location.lat());
-	    //self.lng = ko.observable(data.geometry.location.lng());
+	    self.lat = ko.observable(data.geometry.location.lat());
+	    self.lng = ko.observable(data.geometry.location.lng());
 	    // for static data i.e. when data coming from data.js
-	    self.lat = ko.observable(data.lat);
-		self.lng = ko.observable(data.lng);
+	    //self.lat = ko.observable(data.lat);
+		//self.lng = ko.observable(data.lng);
 		self.mapMarker = ko.observable(new LocMarker(self));
 	};
 
@@ -136,7 +124,7 @@ function processData() {
 $(document).ready(function () {
    createMap();
    model.init();
-   //setTimeout(function() {
+   setTimeout(function() {
    	processData();
-   //}, 1500);
+   }, 1500);
 });
