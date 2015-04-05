@@ -1,37 +1,81 @@
 var map;
-var latitude = 37.3708905;
-var longitude = -121.9675525;
+var latitude;
+var longitude;
 var m_ViewModel;
-var dataFromServer;
+//var dataFromServer;
 var markerArray=[];
 var image = 'images/food1.png';
+var defaultData = true;
 
-function createMap(){
+function initialize(geoOptions) {
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(
+			createMap,geoError,geoOptions);
+	} else {
+		alert('Geolocation is not supported for this Browser version.');
+	}
+};
+
+function geoError(error) {
+	console.log('Error occurred. Error code: ' + error.code);
+	switch(error.code){
+		case 0:
+        	alert("Unknown Error. Please try again later.");
+        	break;
+        case 1:
+        	console.log("Permission Denied.");
+        	createMap(null);
+        	break;
+        case 2:
+        	alert("Position Unavailable.");
+        case 3:
+        	alert("Service Timed out.");
+        default:
+        	alert("Oops!! There is some issue. Please check back again later.")
+	}
+}
+
+function createMap(position){
+	if(position !== null) {
+		defaultData = false;
+		latitude = position.coords.latitude;
+		longitude = position.coords.longitude;
+	} else {
+		// Set default location to Mountain View
+		latitude = 37.3847625;
+		longitude = -122.088205;
+	}
+
     var pyrmont = new google.maps.LatLng(latitude,longitude);
 	map = new google.maps.Map(document.getElementById('map'), {
       center: pyrmont,
-      zoom: 15
+      zoom: 13
     });
+
+	if(defaultData)
+   		fetchData();
+   	else
+   		processData();
 };
 
-var model = {
-	init: function() {
-		var request = {
+function fetchData() {
+	var request = {
     		location: new google.maps.LatLng(latitude,longitude),
     		radius: '500',
     		query: 'cafe'
-  		};
+  	};
+  	service = new google.maps.places.PlacesService(map);
+	service.textSearch(request,callback);
+};
 
-		service = new google.maps.places.PlacesService(map);
-		service.textSearch(request,model.callback);
-	},
-	callback : function(results, status) {
-		if (status == google.maps.places.PlacesServiceStatus.OK) {
-			console.log(results);
-  			dataFromServer = results;
-  		}
-	}
+function callback(results,status) {
+	if (status == google.maps.places.PlacesServiceStatus.OK) {
+		console.log(results);
+  		dataFromServer = results;
+  		processData();
+  	}
 }
+
 
 function processData() {
 
@@ -90,12 +134,19 @@ function processData() {
 		self.name = ko.observable(data.name);
 	    self.address = ko.observable(data.formatted_address);
 
+	    if(!defaultData) {
+	    	self.lat = ko.observable(data.lat);
+			self.lng = ko.observable(data.lng);
+	    } else {
+	    	self.lat = ko.observable(data.geometry.location.lat());
+	    	self.lng = ko.observable(data.geometry.location.lng());
+	    }
 	    //TODO
 	    //uncomment below two lines once start using google maps.
-	    self.lat = ko.observable(data.geometry.location.lat());
-	    self.lng = ko.observable(data.geometry.location.lng());
+	    //self.lat = ko.observable(data.geometry.location.lat());
+	    //self.lng = ko.observable(data.geometry.location.lng());
 	    // for static data i.e. when data coming from data.js
-	    //self.lat = ko.observable(data.lat);
+	   // self.lat = ko.observable(data.lat);
 		//self.lng = ko.observable(data.lng);
 		self.mapMarker = ko.observable(new LocMarker(self));
 	};
@@ -122,9 +173,13 @@ function processData() {
 }
 
 $(document).ready(function () {
-   createMap();
-   model.init();
-   setTimeout(function() {
-   	processData();
-   }, 1500);
+	/*
+	 * Use the maximumAge optional property to tell the browser to use a recently obtained geolocation result.
+	 * This not only returns quicker if the user has requested the data before it also stops the browser from
+	 * having to start up its geolocation hardware interfaces such as Wifi triangulation or the GPS.
+	*/
+	var geoOptions = {
+		maximumAge: 5 * 60 * 1000,
+	}
+	initialize(geoOptions);
 });
