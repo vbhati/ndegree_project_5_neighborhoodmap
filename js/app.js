@@ -24,7 +24,10 @@ function geoError(error) {
         	break;
         case 1:
         	console.log("Permission Denied.");
-        	createMap(null);
+        	// Set default location to Mountain View
+			latitude = 37.3847625;
+			longitude = -122.088205;
+			createMap(null);
         	break;
         case 2:
         	alert("Position Unavailable.");
@@ -40,10 +43,6 @@ function createMap(position){
 		defaultData = false;
 		latitude = position.coords.latitude;
 		longitude = position.coords.longitude;
-	} else {
-		// Set default location to Mountain View
-		latitude = 37.3847625;
-		longitude = -122.088205;
 	}
 
     var pyrmont = new google.maps.LatLng(latitude,longitude);
@@ -52,26 +51,45 @@ function createMap(position){
       zoom: 13
     });
 
-	if(defaultData)
-   		fetchData();
-   	else
-   		processData();
+	fetchData();
 };
 
 function fetchData() {
-	var request = {
+	/*var request = {
     		location: new google.maps.LatLng(latitude,longitude),
     		radius: '500',
     		query: 'cafe'
   	};
   	service = new google.maps.places.PlacesService(map);
-	service.textSearch(request,callback);
+	service.textSearch(request,callback); */
+
+	var photourl='https://api.foursquare.com/v2/venues/4afafbc0f964a520171a22e3/photos?client_id=NGDMJK52C2E24XBBXUBJAVGY0JZ5NXEQLYSXP4WEXXN5SKRJ&client_secret=ULZX0RYWBOZIMK4DF30TX0S42CSJSP1FUTOG2HF0ERCBSKDI&v=20150405&query=Kifer%20Deli%20Cafe';
+	var url = 'https://api.foursquare.com/v2/venues/explore?client_id=NGDMJK52C2E24XBBXUBJAVGY0JZ5NXEQLYSXP4WEXXN5SKRJ&client_secret=ULZX0RYWBOZIMK4DF30TX0S42CSJSP1FUTOG2HF0ERCBSKDI&v=20130815%20&limit=15&near=Mountain%20View&section=coffee&radius=500';
+	$.ajax({
+        url: url,
+        dataType: "json",
+        success: function(response) {
+            var venues = response.response.groups[0].items;
+            dataFromServer = venues;
+  			console.log(dataFromServer);
+
+  			processData();
+         /*   for(var i = 0 ; i < venues.length; i++) {
+                articleStr = articleList[i];
+                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                $wikiElem.append('<li><a href="' + url +'">' +
+                    articleStr + '</a></li>');
+            };
+            clearTimeout(wikiRequestTimeout);*/
+        }
+    });
 };
 
 function callback(results,status) {
 	if (status == google.maps.places.PlacesServiceStatus.OK) {
 		console.log(results);
   		dataFromServer = results;
+  		console.log(dataFromServer);
   		processData();
   	}
 }
@@ -88,7 +106,7 @@ function processData() {
 
 		dataFromServer.forEach(function(data){
 			self.dataList.push(new Location(data));
-			console.log(self.dataList());
+			//console.log(self.dataList());
 		});
 
 		self.filteredList = ko.computed(function(){
@@ -110,6 +128,9 @@ function processData() {
             		var text = data.name().toLowerCase();
             		if(text.indexOf(filter) >= 0){
 						data.mapMarker().marker().setMap(map);
+						google.maps.event.addListener(data.mapMarker().marker(), 'click', function() {
+        					data.mapMarker().infobox().open(map, data.mapMarker().marker());
+        				});
 						return data;
             		}
         		});
@@ -131,16 +152,13 @@ function processData() {
 
 	var Location = function(data) {
 		var self = this;
-		self.name = ko.observable(data.name);
-	    self.address = ko.observable(data.formatted_address);
+		var obj = data.venue;
+		self.name = ko.observable(obj.name);
+	    self.address = ko.observable(obj.location.formattedAddress[0] + obj.location.formattedAddress[1] + obj.location.formattedAddress[2]);
+	    self.lat = ko.observable(obj.location.lat);
+	    self.lng = ko.observable(obj.location.lng);
+	    self.id = ko.observable(obj.id);
 
-	    if(!defaultData) {
-	    	self.lat = ko.observable(data.lat);
-			self.lng = ko.observable(data.lng);
-	    } else {
-	    	self.lat = ko.observable(data.geometry.location.lat());
-	    	self.lng = ko.observable(data.geometry.location.lng());
-	    }
 	    //TODO
 	    //uncomment below two lines once start using google maps.
 	    //self.lat = ko.observable(data.geometry.location.lat());
@@ -166,7 +184,36 @@ function processData() {
 	    	});
 	    	return marker;
 	    });
+
+		self.infobox = ko.computed(function(){
+
+			var boxText = document.createElement("div");
+        	boxText.style.cssText = "border: 1px solid black; margin-top: 8px; background: yellow; padding: 5px;";
+        	boxText.innerHTML = self.parent.name() + self.parent.address();
+
+			 var box = new InfoBox({
+	         content: boxText,
+	         disableAutoPan: false,
+	         maxWidth: 150,
+	         pixelOffset: new google.maps.Size(-140, 0),
+	         zIndex: null,
+	         boxStyle: {
+	            	background: "url('http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/examples/tipbox.gif') no-repeat",
+	            	opacity: 0.75,
+	            	width: "280px"
+	        	},
+	        	closeBoxMargin: "12px 4px 2px 2px",
+	        	closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
+	        	infoBoxClearance: new google.maps.Size(1, 1)
+	    	});
+			return box;
+		});
+
+		google.maps.event.addListener(self.marker(), 'click', function() {
+        	self.infobox().open(map, self.marker());
+		});
 		markerArray.push(self);
+
 	}
 
 	ko.applyBindings(new ViewModel);
