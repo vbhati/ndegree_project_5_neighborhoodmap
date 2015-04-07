@@ -8,16 +8,31 @@
 </head>
 
 <body>
-	<div id="map"></div>
+<div id="container">
+	<div>
+		<h3>Nearby Cities</h3>
+		<!--
+			http://w3facility.org/question/how-to-clearremove-observable-bindings-in-knockout-js/#answer-16937056
+			Since we are allowing user to load results from other cities we need to cleanup existing model/bindings
+			and populate new again. It can better be done using template, as whenever we use "with" and "template"
+			knockout re-creates that part of DOM and so it automatically gets cleaned up.
+		-->
+		<ul data-bind="template: { name: 'template', foreach: nearbyCities }"></ul>
+		<script id="template" type="text/html">
+   			<li><span data-bind="text: name,click: $parent.updateData,latitude: lat, longitude:lng"></span></li>
+		</script>
 
+	</div>
+	<div id="map"></div>
+	<input type="text" data-bind="value: filter, valueUpdate: 'afterkeydown'" />
 	 <div>
-        	<ul data-bind='foreach: filteredList'>
-            <li>
-               <span data-bind="text: name,click: $parent.showClickedItem, map:map,latitude: lat, longitude:lng"></span>
-            </li>
-        </ul>
+	 	<h3>Venue List</h3>
+	 	<ul data-bind="template: { name: 'templateList', foreach: filteredList }"></ul>
+        <script id="templateList" type="text/html">
+    		<li><span data-bind="text: name,click: $parent.showClickedItem"></span></li>
+		</script>
     </div>
-    <input type="text" data-bind="value: filter, valueUpdate: 'afterkeydown'" />
+</div>
     	<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
 	<script src="js/data.js"></script>
 	<script src="js/app.js"></script>
