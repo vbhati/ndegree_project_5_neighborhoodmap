@@ -4,7 +4,8 @@ var longitude;
 var dataFromServer;
 var city;
 var geonames;
-var image = 'images/food1.png';
+// icon downloaded from : https://mapicons.mapsmarker.com/
+var image = 'images/coffee.png';
 
 /*
 	This method is called on page load. It used HTML5 geolocation api to get user's current location
@@ -59,11 +60,13 @@ function createMap(position){
 		longitude = position.coords.longitude;
 	}
 
-	var pyrmont = new google.maps.LatLng(latitude,longitude);
-		map = new google.maps.Map(document.getElementById('map'), {
-    	center: pyrmont,
-      	zoom: 15
-    });
+	var mapOptions = {
+    	disableDefaultUI: false
+  	};
+
+  	// This next line makes `map` a new Google Map JavaScript Object and attaches it to <div id="map">
+  	map = new google.maps.Map(document.querySelector('#map'), mapOptions);
+
 
 	// get the city from given latitude and longitude. This city will be used by geonames api
 	// to get nearby cities.
@@ -280,6 +283,15 @@ function processData() {
 		google.maps.event.addListener(self.marker(), 'click', function() {
         	self.infobox().open(map, self.marker());
 		});
+
+		var bounds = window.mapBounds;            // current boundaries of the map window
+		// this is where the pin actually gets added to the map.
+    	// bounds.extend() takes in a map location object
+    	bounds.extend(new google.maps.LatLng(parent.lat(), parent.lng()));
+    	// fit the map to the new marker
+    	map.fitBounds(bounds);
+    	// center the map
+    	map.setCenter(bounds.getCenter());
 	}
 
 	// NearbyCities object
@@ -303,4 +315,12 @@ $(document).ready(function () {
 		maximumAge: 5 * 60 * 1000,
 	}
 	initialize(geoOptions);
+	// Sets the boundaries of the map based on pin locations
+  	window.mapBounds = new google.maps.LatLngBounds();
+	// Vanilla JS way to listen for resizing of the window
+	// and adjust map bounds
+	window.addEventListener('resize', function(e) {
+  		// Make sure the map bounds get updated on page resize
+ 		map.fitBounds(mapBounds);
+ 	});
 });
