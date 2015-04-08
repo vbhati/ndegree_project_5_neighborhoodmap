@@ -1,42 +1,85 @@
 <html>
 <head>
-	<title>Neighborhood Map</title>
 	<meta charset="utf-8">
-  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="css/style.css" rel="stylesheet" type="text/css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>In The Neighborhood</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.css">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="js/lib/knockout-3.2.0.js"></script>
 	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBDiSoZWAGEo03IiUNsxoWt9MXC5bHGNsk&libraries=places"></script>
 </head>
-
 <body>
-<div id="container">
-	<div>
-		<h3>Nearby Cities</h3>
+  <header class="header">
+    <div class="header__inner">
+      <img class="header__logo" src="images/shop.png">
+      <h1 class="header__title">
+        In The Neighborhood
+      </h1>
+    	<a id="menu" class="header__menu">
+     		<svg height="41" width="35">
+  				<g fill="none">
+   					<path stroke="black" d="M5 30 l215 0" />
+   					<path stroke="black" d="M5 35 l215 0" />
+   					<path stroke="black" d="M5 40 l215 0" />
+  				</g>
+  				Sorry, your browser does not support inline SVG.
+				</svg>
+			</a>
+		</div>
+  </header>
+
+	<div id="container">
+		<nav class="nav">
 		<!--
 			http://w3facility.org/question/how-to-clearremove-observable-bindings-in-knockout-js/#answer-16937056
 			Since we are allowing user to load results from other cities we need to cleanup existing model/bindings
 			and populate new again. It can better be done using template, as whenever we use "with" and "template"
 			knockout re-creates that part of DOM and so it automatically gets cleaned up.
 		-->
-		<ul data-bind="template: { name: 'template', foreach: nearbyCities }"></ul>
-		<script id="template" type="text/html">
-   			<li><span data-bind="text: name,click: $parent.updateData,latitude: lat, longitude:lng"></span></li>
-		</script>
-
+	    <ul class="nav__list" data-bind="template: { name: 'template', foreach: nearbyCities }"></ul>
+	      <script id="template" type="text/html">
+   				<li class="nav__item"><span data-bind="text: name,click: $parent.updateData,latitude: lat, longitude:lng"></span></li>
+				</script>
+		</nav>
+		<main id="main__content">
+		 	<div id="drawer" class="search_list">
+		 		<div class="search_heading">
+		 			<label class="search__label">Search List</label>
+		 			<input type="text" class="search__box" data-bind="value: filter, valueUpdate: 'afterkeydown'"/>
+		 		</div>
+		 		<ul class="venue__list" data-bind="template: { name: 'templateList', foreach: filteredList }"></ul>
+	      	<script id="templateList" type="text/html">
+	    			<li class="list__item"><span data-bind="text: name,click: $parent.showClickedItem"></span></li>
+					</script>
+		    </ul>
+		  </div>
+		  <div id="map">
+		  </div>
+		</main>
 	</div>
-	<div id="map"></div>
-	<input type="text" data-bind="value: filter, valueUpdate: 'afterkeydown'" />
-	 <div>
-	 	<h3>Venue List</h3>
-	 	<ul data-bind="template: { name: 'templateList', foreach: filteredList }"></ul>
-        <script id="templateList" type="text/html">
-    		<li><span data-bind="text: name,click: $parent.showClickedItem"></span></li>
-		</script>
-    </div>
-</div>
-    	<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
+  <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
 	<script src="js/data.js"></script>
 	<script src="js/app.js"></script>
+
+	 <script>
+      /*
+       * Open the drawer when the menu ison is clicked.
+       */
+      var menu = document.querySelector('#menu');
+      var mapBgrd = document.querySelector('#map');
+      var drawer = document.querySelector('#drawer');
+
+      menu.addEventListener('click', function(e) {
+        drawer.classList.toggle('open');
+        e.stopPropagation();
+      });
+      mapBgrd.addEventListener('click', function() {
+        drawer.classList.remove('open');
+      });
+
+    </script>
 </body>
 </html>

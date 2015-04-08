@@ -306,6 +306,14 @@ function processData() {
 }
 
 $(document).ready(function () {
+	// Sets the boundaries of the map based on pin locations
+  	window.mapBounds = new google.maps.LatLngBounds();
+	// Vanilla JS way to listen for resizing of the window
+	// and adjust map bounds
+	window.addEventListener('resize', function(e) {
+  		// Make sure the map bounds get updated on page resize
+ 		map.fitBounds(mapBounds);
+ 	});
 	/*
 	 * Use the maximumAge optional property to tell the browser to use a recently obtained geolocation result.
 	 * This not only returns quicker if the user has requested the data before it also stops the browser from
@@ -315,12 +323,5 @@ $(document).ready(function () {
 		maximumAge: 5 * 60 * 1000,
 	}
 	initialize(geoOptions);
-	// Sets the boundaries of the map based on pin locations
-  	window.mapBounds = new google.maps.LatLngBounds();
-	// Vanilla JS way to listen for resizing of the window
-	// and adjust map bounds
-	window.addEventListener('resize', function(e) {
-  		// Make sure the map bounds get updated on page resize
- 		map.fitBounds(mapBounds);
- 	});
+
 });
