@@ -18,16 +18,6 @@
       <h1 class="header__title">
         In The Neighborhood
       </h1>
-    	<a id="menu" class="header__menu">
-     		<svg height="41" width="35">
-  				<g fill="none">
-   					<path stroke="black" d="M5 30 l215 0" />
-   					<path stroke="black" d="M5 35 l215 0" />
-   					<path stroke="black" d="M5 40 l215 0" />
-  				</g>
-  				Sorry, your browser does not support inline SVG.
-				</svg>
-			</a>
 		</div>
   </header>
 
@@ -44,21 +34,26 @@
    				<li class="nav__item"><span data-bind="text: name,click: $parent.updateData,latitude: lat, longitude:lng"></span></li>
 				</script>
 		</nav>
-		<main id="main__content">
-		 	<div id="drawer" class="search_list">
-		 		<div class="search_heading">
-		 			<label class="search__label">Search List</label>
-		 			<input type="text" class="search__box" data-bind="value: filter, valueUpdate: 'afterkeydown'"/>
-		 		</div>
-		 		<ul class="venue__list" data-bind="template: { name: 'templateList', foreach: filteredList }"></ul>
-	      	<script id="templateList" type="text/html">
-	    			<li class="list__item"><span data-bind="text: name,click: $parent.showClickedItem"></span></li>
-					</script>
-		    </ul>
-		  </div>
-		  <div id="map">
-		  </div>
-		</main>
+		<div id="menu">
+	  	<a class="__search">
+     		<img src="images/list_search.png" class="search_icon">
+      </a>
+    </div>
+			<main id="main__content">
+			 	<div id="drawer" class="search_list">
+			 		<div class="search_heading">
+			 			<label class="search__label">Search List</label>
+			 			<input type="text" class="search__box" data-bind="value: filter, valueUpdate: 'afterkeydown'"/>
+			 		</div>
+			 		<ul class="venue__list" data-bind="template: { name: 'templateList', foreach: filteredList }"></ul>
+		      	<script id="templateList" type="text/html">
+		    			<li class="list__item"><span data-bind="text: name,click: $parent.showClickedItem"></span></li>
+						</script>
+			    </ul>
+			  </div>
+			  <div id="map">
+			  </div>
+			</main>
 	</div>
   <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
 	<script src="js/data.js"></script>

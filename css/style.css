@@ -51,8 +51,9 @@ ul {
 .header__logo {
   height: 60px;
   margin-right: 1em;
+  margin-left: 1em;
   vertical-align: top;
-  margin-top: 12px;
+  margin-top: 1.25em;
 }
 
 .header__title {
@@ -71,20 +72,21 @@ ul {
   margin-left: auto;
   margin-right: auto;
   max-height: 70px;
-  margin-top: 1.5em;
+  padding: 10px 0px;
 }
 
 .nav__list {
   width: 100%;
-  padding: 0;
+  padding: 1em 0em;
   margin: 0;
+  background-color: peachpuff;
 }
 
 .nav__item {
 	box-sizing: border-box;
   text-align: center;
   line-height: 24px;
-  padding: 24px;
+  padding: 1.25em;
   text-transform: uppercase;
 	display: inline;
 	font-weight: 300;
@@ -97,7 +99,7 @@ ul {
 
 #main__content {
 	width: 100%;
-	margin-top: 20px;
+	margin-top: 10px;
 }
 
 
@@ -105,13 +107,13 @@ ul {
 	List of venue section styling
 */
 #map {
-	width:69%;
-	background-color: blue;
-	display: inline-block;
-
+	width:100%;
   height: 100%;
-  margin-left: 5%;
-  margin-right: 5%;
+}
+
+.__search {
+  display: inline-block;
+  width: 100%;
 }
 
 .search_list {
@@ -119,16 +121,9 @@ ul {
   border: 1px solid black;
   opacity: 0.6;
   filter: alpha(opacity=60); /* For IE8 and earlier */
-	width:30%;
 	display: inline-block;
 	z-index: 10;
-	width: 250px;
 	position: absolute;
-	/* This trasform moves the search_list off canvas. */
-	-webkit-transform: translate(-300px, 0);
-	transform: translate(-300px, 0);
-	/* Optionally, we animate the search_list. */
-	transition: transform 0.3s ease;
 }
 
 .search_list.open {
