@@ -5,9 +5,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>In The Neighborhood</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" type="text/css" href="css/style.css">
-  <link rel="stylesheet" type="text/css" href="css/responsive.css">
-  <script src="js/lib/jQuery.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.min.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.min.css">
+  <script src="js/jQuery.min.js"></script>
 	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBDiSoZWAGEo03IiUNsxoWt9MXC5bHGNsk&libraries=places"></script>
 </head>
 <body>
@@ -46,7 +46,7 @@
 			 		</div>
 			 		<ul class="venue__list" data-bind="template: { name: 'templateList', foreach: filteredList }"></ul>
 		      	<script id="templateList" type="text/html">
-		    			<li class="list__item"><span data-bind="text: name,click: $parent.showClickedItem"></span></li>
+		    			<li class="list__item" data-bind="text: name,click: $parent.showClickedItem"></li>
 						</script>
 			    </ul>
 			  </div>
@@ -54,8 +54,8 @@
 			  </div>
 			</main>
 	</div>
-  <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
-	<script async src="js/app.js"></script>
-	<script async src="js/lib/knockout-3.2.0.js"></script>
+  <script async type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
+	<script async src="js/app.min.js"></script>
+	<script async src="js/knockout-3.2.0.js"></script>
 </body>
 </html>

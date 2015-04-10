@@ -91,6 +91,7 @@
     width:95%;
     margin-left: 1.0em;
   }
+
 }
 
 @media screen and (min-width: 801px) {
@@ -108,6 +109,10 @@
     transform: translate(-300px, 0);
     /* Optionally, we animate the drawer. */
     transition: transform 0.3s ease;
+  }
+
+  .venue_name {
+    font-size: 1.50em;
   }
 
 }

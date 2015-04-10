@@ -1,9 +1,26 @@
+/*
+	Project: Neighborhood Map
+	App.js file implements following functionalities:
+	# Fetch user's current location using HTML5 geolocation api
+	# Generate Google map
+	# Get city(current/selected) from given lat and lng using Google's ReverseGeolocation api. This city value
+		is used to fetch data from Foursquare api.
+	# Get the list of nearby cities using geonames api. These cities are shown under header section. User can use these
+		to change current location.
+	# Fetch data (nearby Cafe's) from Foursquare api.
+	# Create Knockout.js required objects and ViewModel. Update UI/Views using knockout bindings.
+	# Implementation with respecto to error handling, Map marker infobox styling and search list functionality
+*/
+
+//Global Varaiables
 var map;
 var latitude;
 var longitude;
 var dataFromServer;
 var city;
 var geonames;
+// to hold markers
+var markersArray = [];
 // icon downloaded from : https://mapicons.mapsmarker.com/
 var image = 'images/coffee.png';
 
@@ -35,9 +52,9 @@ function geoError(error) {
         	console.log("Permission Denied.");
         	// If use has chosen not to share their location use default location. i.e. Mountain View
         	// Set default values for latitude and longitude.
-			latitude = 37.3847625;
-			longitude = -122.088205;
-			createMap(null);
+					latitude = 37.3847625;
+					longitude = -122.088205;
+					createMap(null);
         	break;
         case 2:
         	alert("Position Unavailable.");
@@ -64,9 +81,18 @@ function createMap(position){
     	disableDefaultUI: false
   	};
 
-  	// This next line makes `map` a new Google Map JavaScript Object and attaches it to <div id="map">
-  	map = new google.maps.Map(document.querySelector('#map'), mapOptions);
-
+	if(map === undefined) {
+		// This next line makes `map` a new Google Map JavaScript Object and attaches it to <div id="map">
+		map = new google.maps.Map(document.querySelector('#map'), mapOptions);
+	} else {
+			// Clear map markers.
+		  if (markersArray) {
+		    for (var i = 0 ; i < markersArray.length ; i++) {
+		      markersArray[i].marker().setMap(null);
+		      markersArray[i].infobox().close();
+		    }
+		  }
+	}
 
 	// get the city from given latitude and longitude. This city will be used by geonames api
 	// to get nearby cities.
@@ -150,7 +176,6 @@ function processData() {
 	    // set the venue data (recieved from foursquare api) in self.dataList observable
 		dataFromServer.forEach(function(data){
 			self.dataList.push(new Venue(data));
-			console.log(data);
 		});
 
 		// set the nearby cities data (recieved from geonames api) in self.nearbyCities observable
@@ -188,19 +213,19 @@ function processData() {
             		data.mapMarker().marker().setMap(null);
             		// remove opened infoboxes if there are any on the map.
             		if(info !== null && info !== undefined) {
-						info.close();
-					}
+									info.close();
+								}
             		clearMap = true;
             		var text = data.name().toLowerCase();
             		//apply filter
             		if(text.indexOf(filter) >= 0){
             			// add the related marker to map
-						data.mapMarker().marker().setMap(map);
-						// add event listener for infobox
-						google.maps.event.addListener(data.mapMarker().marker(), 'click', function() {
-        					data.mapMarker().infobox().open(map, data.mapMarker().marker());
-        				});
-						return data;
+									data.mapMarker().marker().setMap(map);
+									// add event listener for infobox
+									google.maps.event.addListener(data.mapMarker().marker(), 'click', function() {
+        						data.mapMarker().infobox().open(map, data.mapMarker().marker());
+        					});
+									return data;
             		}
         		});
     		}
@@ -233,12 +258,17 @@ function processData() {
 		var self = this;
 		var obj = data.venue;
 		self.name = ko.observable(obj.name);
+
+		//TODO: Should below variables be observable?
+		// These are not modified in/from UI.
+		// Update after research or feedback.
 		self.street = ko.observable(obj.location.formattedAddress[0]);
 		self.city = ko.observable(obj.location.formattedAddress[1]);
 		self.country = ko.observable(obj.location.formattedAddress[2]);
 		self.phone = ko.observable(obj.contact.formattedPhone);
 		self.ratings = ko.observable(obj.rating);
 		self.url = ko.observable(obj.url);
+
 	  self.lat = ko.observable(obj.location.lat);
 	  self.lng = ko.observable(obj.location.lng);
 	  self.id = ko.observable(obj.id);
@@ -280,6 +310,8 @@ function processData() {
 	        	closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
 	        	infoBoxClearance: new google.maps.Size(1, 1)
 	    	});
+
+			markersArray.push(self);
 			return box;
 		});
 
