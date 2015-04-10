@@ -140,7 +140,7 @@ function fetchData() {
             getNearbyCities();
         }
     }).error(function() {
-        alert("Issue getting data from foursquare.");
+        alert("Data Can't be loaded at present. Please try again later.");
     });
 };
 
@@ -157,7 +157,7 @@ function getNearbyCities() {
             processData();
         }
     }).error(function() {
-        alert("Issue getting nearby cities from geonames.");
+        alert("List of nearby cities can't be loaded please try again later.");
     });
 }
 
