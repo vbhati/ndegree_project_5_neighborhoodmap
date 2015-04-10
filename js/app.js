@@ -150,6 +150,7 @@ function processData() {
 	    // set the venue data (recieved from foursquare api) in self.dataList observable
 		dataFromServer.forEach(function(data){
 			self.dataList.push(new Venue(data));
+			console.log(data);
 		});
 
 		// set the nearby cities data (recieved from geonames api) in self.nearbyCities observable
@@ -232,10 +233,15 @@ function processData() {
 		var self = this;
 		var obj = data.venue;
 		self.name = ko.observable(obj.name);
-	    self.address = ko.observable(obj.location.formattedAddress[0] + obj.location.formattedAddress[1] + obj.location.formattedAddress[2]);
-	    self.lat = ko.observable(obj.location.lat);
-	    self.lng = ko.observable(obj.location.lng);
-	    self.id = ko.observable(obj.id);
+		self.street = ko.observable(obj.location.formattedAddress[0]);
+		self.city = ko.observable(obj.location.formattedAddress[1]);
+		self.country = ko.observable(obj.location.formattedAddress[2]);
+		self.phone = ko.observable(obj.contact.formattedPhone);
+		self.ratings = ko.observable(obj.rating);
+		self.url = ko.observable(obj.url);
+	  self.lat = ko.observable(obj.location.lat);
+	  self.lng = ko.observable(obj.location.lng);
+	  self.id = ko.observable(obj.id);
 		self.mapMarker = ko.observable(new MapMarker(self));
 	};
 
@@ -257,20 +263,18 @@ function processData() {
 		// create infobox for marker
 		self.infobox = ko.computed(function(){
 			// http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/examples.html
-			var boxText = document.createElement("div");
-        	boxText.style.cssText = "border: 1px solid black; margin-top: 8px; background: yellow; padding: 5px; border-radius:5px;";
-        	boxText.innerHTML = self.parent.name() + self.parent.address();
+      var boxText = createStyle(self);
 
 			var box = new InfoBox({
 	        content: boxText,
 	        disableAutoPan: false,
-	        maxWidth: 150,
+	        maxWidth: 200,
 	        pixelOffset: new google.maps.Size(-140, 0),
 	        zIndex: null,
 	        boxStyle: {
 	           	background: "url('http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/examples/tipbox.gif') no-repeat",
-	        	   	opacity: 0.75,
-	            	width: "280px"
+	           		opacity: 0.75,
+	            	width: "200px"
 	        	},
 	        	closeBoxMargin: "12px 4px 2px 2px",
 	        	closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
@@ -300,6 +304,39 @@ function processData() {
 		self.name = data.name;
 		self.lat = data.lat;
 		self.lng = data.lng;
+	}
+
+	// Infobox Style and content
+	function createStyle(data) {
+		var boxText = document.createElement("div");			 // Create div element for infobox
+		boxText.style.cssText = 'border: 1px solid black; margin-top: 8px; background: rgb(55, 55, 55);' +
+		 'padding: 5px; border-radius:5px;';
+
+        if(data.parent.url() !== null && data.parent.url() !== undefined) {
+        	 boxText.innerHTML = '<div class="infobox_heading"><img class="coffee-image" src="' + "./images/coffee-icon.png" + '"alt="Location image">' +
+       			 '<a class="venue_name" href="' + data.parent.url() + '" target="_blank">' +
+        			data.parent.name() + '</a></div>';
+        } else {
+        		boxText.innerHTML = '<div class="infobox_heading"><img class="coffee-image" src="' + "./images/coffee-icon.png" + '"alt="Location image">' +
+       			 '<a class="venue_name" href=#>' +
+        		data.parent.name() + '</a></div>';
+        }
+
+        boxText.innerHTML +=	'<div>' +
+        	'<h3 class="venue_info">' + data.parent.street() + '</h3>' +
+        	'<h3 class="venue_info">' + data.parent.city() + '</h3>' +
+        	'<h3 class="venue_info">' + data.parent.country() + '</h3>';
+
+        if(data.parent.phone() !== null && data.parent.phone() !== undefined) {
+        		boxText.innerHTML += '<div><h3 class="venue_info">' + data.parent.phone() + '</h3></div>';
+        }
+
+        if(data.parent.ratings() !== null && data.parent.ratings() !== undefined) {
+        	boxText.innerHTML += '<div><img class="rating_img" src="' + "./images/foursquare.png" + '"alt="Location image">' +
+        	'<span class="venue_info">  Ratings : ' + data.parent.ratings() + '</span></div>';
+        }
+
+    return boxText;
 	}
 
 	ko.applyBindings(new ViewModel);

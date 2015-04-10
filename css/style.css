@@ -42,12 +42,6 @@ ul {
   transition: min-height 0.3s;
 }
 
-.header__inner {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .header__logo {
   height: 60px;
   margin-right: 1em;
@@ -59,14 +53,16 @@ ul {
 .header__title {
   font-weight: 300;
   font-size: 3em;
-  margin: 0.75em 0.25em;
+  margin-top: 0.8em;
+  margin-left: 0.5em;
   display: inline-block;
   color: #212121;
 }
 
 /*
-	Nearby cities header styling
-*/
+ * Nearby cities sub header style
+ *
+ */
 
 .nav {
   margin-left: auto;
@@ -79,7 +75,7 @@ ul {
   width: 100%;
   padding: 1em 0em;
   margin: 0;
-  background-color: peachpuff;
+  background-color: #ffa500;
 }
 
 .nav__item {
@@ -94,8 +90,9 @@ ul {
 }
 
 /*
-	Main section
-*/
+ * Main section
+ *
+ */
 
 #main__content {
 	width: 100%;
@@ -104,11 +101,12 @@ ul {
 
 
 /*
-	List of venue section styling
-*/
+ *	Search List and Map
+ *
+ */
 #map {
 	width:100%;
-  height: 100%;
+  height: 75%;
 }
 
 .__search {
@@ -157,23 +155,46 @@ ul {
   color: #FFFFFF;
 	display: list-item;
 	border-bottom: 1px solid #E0E0E0;
-	width: 100%;
+	width: 90%;
 	text-align: left;
 	padding: 0.25em;
 }
 
 /*
-#map {
-  display: block;
-  height: 100%;
-  margin-left: 5%;
-  margin-right: 5%;
-  width: 500px;
-  height: 500px;
+ * Map Marker Infobox styling
+ *
+ */
+
+.__infobox {
+  border: 1px solid black;
+  margin-top: 8px;
+  padding: 5px;
+  border-radius: 5px;
+  background: #FFFFFF;
+  border: 1px solid black;
 }
 
-#mapDiv {
-  height: 400px;
-  width: 100%;
-  padding-bottom: 5%;
-}  */
+.venue_name {
+  font-weight: 100;
+  font-size: 1.50em;
+  color: #FFFFFF;
+  float: right;
+  margin-left: 5px;
+}
+
+.venue_info {
+  color: #FFFFFF;
+  font-weight: 100;
+}
+
+.infobox_heading {
+  margin-bottom: 10px;
+  display: flex;
+}
+
+.list__item:hover{
+    background-color:#ffa500;
+    color: rgb(0, 0, 0);
+    border-bottom: 1px solid #000000;
+    font-weight: bold;
+}
