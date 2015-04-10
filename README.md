@@ -1,7 +1,8 @@
 ## Neighborhood Map
 #### http://in-the-neighborhood.appspot.com/
 
-In The Neighborhood website displays nearby (using user's current coordinates if allowed or default location) cafe locations on Google map. It implements following functionalities:
+"In The Neighborhood" website displays nearby (using user's current coordinates if allowed or default location) cafe locations on Google map. It implements following functionalities:
+
 1. Lists cafe's in the form of markers on map as well as text in a list.
 
 2. List can be viewed using hamburger icon on the page.
@@ -14,7 +15,7 @@ In The Neighborhood website displays nearby (using user's current coordinates if
 
 6. Infobox provides details about cafe's name, address, phone (if any), reviews (if any), website url(if any)
 
-7. Apart from default location user can search for cafe's in nearby cities by clicking on given city on the top under heading section.
+7. Apart from default location user can search for cafe's in nearby cities by selecting  one under heading section.
 
 8. Application takes care of updating map with new markers and list data.
 
