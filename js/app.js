@@ -351,6 +351,23 @@ $(document).ready(function () {
   		// Make sure the map bounds get updated on page resize
  		map.fitBounds(mapBounds);
  	});
+
+ 	/*
+   * Open the drawer when the menu ison is clicked.
+   */
+  var menu = document.querySelector('#menu');
+  var mapBgrd = document.querySelector('#map');
+  var drawer = document.querySelector('#drawer');
+
+  menu.addEventListener('click', function(e) {
+  	drawer.classList.toggle('open');
+  	e.stopPropagation();
+  });
+
+  mapBgrd.addEventListener('click', function() {
+    drawer.classList.remove('open');
+  });
+
 	/*
 	 * Use the maximumAge optional property to tell the browser to use a recently obtained geolocation result.
 	 * This not only returns quicker if the user has requested the data before it also stops the browser from
