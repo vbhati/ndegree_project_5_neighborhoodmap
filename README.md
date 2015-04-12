@@ -1,19 +1,16 @@
 ## Neighborhood Map
 
-"In The Neighborhood" website displays nearby (using user's current coordinates if allowed or default location) cafe locations on Google map. User can filter the list of cafe's, get the details of particular cafe and view results for nearby cities as well.
+"In The Neighborhood" website displays nearby (using user's current coordinates if allowed or default location) cafe locations on Google map. User can filter the list of cafe's, get the details about particular cafe and view results for nearby cities as well.
 
 #### Instructions:
 
- * Launch the application using following link:
-		#### http://in-the-neighborhood.appspot.com/
+ * Launch the application using following link: http://in-the-neighborhood.appspot.com/
 
  * Application will try to access user's current location to display results. If denied, it will display cafe results for 		Mountain View location.
 
  * You can filter the cafe's by clicking on hamburger icon, which displays the list of cafe's and a text box to filter list.
 
- * Filtering functionality filters both list and markers on map.
-
- * Filter functionality is case insensitive and can be performed for any part of string.
+ * Filter functionality filters both list and markers on map. It is case insensitive and can be performed on any part of string.
 
  * Details about cafe can be viewed by either click on name in the list or the marker, that displays infobox on map.
 
@@ -61,3 +58,9 @@ http://jsfiddle.net/jEhJ3/597/
 https://developers.google.com/maps/documentation/javascript/
 
 http://www.codeproject.com/Articles/351298/KnockoutJS-and-Google-Maps-binding
+
+http://stackoverflow.com/questions/2304863/how-to-write-a-good-readme
+
+http://docs.writethedocs.org/writing/beginners-guide-to-docs/
+
+http://jshint.com/
