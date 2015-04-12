@@ -23,8 +23,8 @@ var geonames;
 var markersArray = [];
 // icon downloaded from : https://mapicons.mapsmarker.com/
 var image = 'images/coffee.png';
-var menu, mapBgrd, drawer;
-var popupItem = false;
+var menu, mapBgrd, drawer, info;
+var popupItem;
 
 /*
 	This method is called on page load. It used HTML5 geolocation api to get user's current location
@@ -171,11 +171,11 @@ function processData() {
 	// Controller
 	var ViewModel = function() {
 		var self = this;
-		var info;
-	    self.filter = ko.observable("");
-	    var clearMap = false;
-	    self.dataList = ko.observableArray([]);
-	    self.nearbyCities = ko.observableArray([]);
+	  self.filter = ko.observable("");
+	  var clearMap = false;
+	  self.dataList = ko.observableArray([]);
+	  self.nearbyCities = ko.observableArray([]);
+	  popupItem = false;
 
 	    // set the venue data (recieved from foursquare api) in self.dataList observable
 		dataFromServer.forEach(function(data){
@@ -337,6 +337,7 @@ function processData() {
 		{
 			self.infobox().open(map, self.marker());
 			popupItem = true;
+			info = self.infobox();
 		}
 
 		var bounds = window.mapBounds;            // current boundaries of the map window
