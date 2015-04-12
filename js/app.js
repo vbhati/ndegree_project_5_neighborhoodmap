@@ -1,15 +1,15 @@
 /*
-	Project: Neighborhood Map
-	App.js file implements following functionalities:
-	# Fetch user's current location using HTML5 geolocation api
-	# Generate Google map
-	# Get city(current/selected) from given lat and lng using Google's ReverseGeolocation api. This city value
-		is used to fetch data from Foursquare api.
-	# Get the list of nearby cities using geonames api. These cities are shown under header section. User can use these
-		to change current location.
-	# Fetch data (nearby Cafe's) from Foursquare api.
-	# Create Knockout.js required objects and ViewModel. Update UI/Views using knockout bindings.
-	# Implementation with respecto to error handling, Map marker infobox styling and search list functionality
+ Project: Neighborhood Map
+ App.js file implements following functionalities:
+ # Fetch user's current location using HTML5 geolocation api
+ # Generate Google map
+ # Get city(current/selected) from given lat and lng using Google's ReverseGeolocation api. This city value
+ is used to fetch data from Foursquare api.
+ # Get the list of nearby cities using geonames api. These cities are shown under header section. User can use these
+   to change current location.
+ # Fetch data (nearby Cafe's) from Foursquare api.
+ # Create Knockout.js required objects and ViewModel. Update UI/Views using knockout bindings.
+ # Implementation with respecto to error handling, Map marker infobox styling and search list functionality
 */
 
 //Global Varaiables
@@ -23,6 +23,8 @@ var geonames;
 var markersArray = [];
 // icon downloaded from : https://mapicons.mapsmarker.com/
 var image = 'images/coffee.png';
+var menu, mapBgrd, drawer;
+var popupItem = false;
 
 /*
 	This method is called on page load. It used HTML5 geolocation api to get user's current location
@@ -36,7 +38,7 @@ function initialize(geoOptions) {
 	} else {
 		alert('Geolocation is not supported for this Browser version.');
 	}
-};
+}
 
 /*
 	geoError is a callback method from getCurrentPosition().
@@ -58,10 +60,12 @@ function geoError(error) {
         	break;
         case 2:
         	alert("Position Unavailable.");
+        	break;
         case 3:
         	alert("Service Timed out.");
+        	break;
         default:
-        	alert("Oops!! There is some issue. Please try again later.")
+        	alert("Oops!! There is some issue. Please try again later.");
 	}
 }
 
@@ -102,9 +106,9 @@ function createMap(position){
   	geocoder.geocode({'latLng': latlng}, function(results, status) {
     	if (status == google.maps.GeocoderStatus.OK) {
           	var address_component = results[0].address_components;
-           	for (j = 0 ; j < address_component.length ; ++j) {
+           	for (var j = 0 ; j < address_component.length ; ++j) {
            		var types = address_component[j].types;
-           		for (k = 0 ; k < types.length ; ++k) {
+           		for (var k = 0 ; k < types.length ; ++k) {
            			//find city
 					if (types[k] == "locality") {
                		//set city name
@@ -122,7 +126,7 @@ function createMap(position){
       		alert('Geocoder failed due to: ' + status);
     	}
   	});
-};
+}
 
 
 /*
@@ -142,7 +146,7 @@ function fetchData() {
     }).error(function() {
         alert("Data Can't be loaded at present. Please try again later.");
     });
-};
+}
 
 /*
 
@@ -192,7 +196,7 @@ function processData() {
 			// if no filter value provided
     		if (!filter) {
     			// if map has no markers, create them
-    			if(clearMap == true) {
+    			if(clearMap === true) {
     				for(var i = 0 ; i < self.dataList().length ; i ++) {
     					self.dataList()[i].mapMarker().marker().setMap(map);
     				}
@@ -238,19 +242,27 @@ function processData() {
 			if(info !== null && info !== undefined) {
 				info.close();
 			}
+
 			item.mapMarker().infobox().open(map, item.mapMarker().marker());
 			// add opened infobox to info variable to keep track of it.
-        	info = item.mapMarker().infobox();
-        };
+      info = item.mapMarker().infobox();
 
-        // update results with user selected city
-        self.updateData = function(item) {
-        	latitude = item.lat;
-        	longitude = item.lng;
-        	// clean the existing bindings and startover for new location.
-        	ko.cleanNode(document.body);
-        	createMap(null);
-        };
+      if(window.innerWidth !== undefined) {
+				var w=window.innerWidth;
+				if(w <= 420) {
+					drawer.classList.remove('open');
+				}
+			}
+    };
+
+    // update results with user selected city
+    self.updateData = function(item) {
+    	latitude = item.lat;
+    	longitude = item.lng;
+    	// clean the existing bindings and startover for new location.
+    	ko.cleanNode(document.body);
+    	createMap(null);
+    };
 	};
 
 	// Venue object
@@ -320,6 +332,13 @@ function processData() {
         	self.infobox().open(map, self.marker());
 		});
 
+		// Keep one infobox opened on the map.
+		if(!popupItem)
+		{
+			self.infobox().open(map, self.marker());
+			popupItem = true;
+		}
+
 		var bounds = window.mapBounds;            // current boundaries of the map window
 		// this is where the pin actually gets added to the map.
     	// bounds.extend() takes in a map location object
@@ -328,7 +347,7 @@ function processData() {
     	map.fitBounds(bounds);
     	// center the map
     	map.setCenter(bounds.getCenter());
-	}
+	};
 
 	// NearbyCities object
 	var NearbyCities = function(data){
@@ -336,7 +355,7 @@ function processData() {
 		self.name = data.name;
 		self.lat = data.lat;
 		self.lng = data.lng;
-	}
+	};
 
 	// Infobox Style and content
 	function createStyle(data) {
@@ -380,16 +399,16 @@ $(document).ready(function () {
 	// Vanilla JS way to listen for resizing of the window
 	// and adjust map bounds
 	window.addEventListener('resize', function(e) {
-  		// Make sure the map bounds get updated on page resize
+  	// Make sure the map bounds get updated on page resize
  		map.fitBounds(mapBounds);
  	});
 
  	/*
    * Open the drawer when the menu ison is clicked.
    */
-  var menu = document.querySelector('#menu');
-  var mapBgrd = document.querySelector('#map');
-  var drawer = document.querySelector('#drawer');
+  menu = document.querySelector('#menu');
+  mapBgrd = document.querySelector('#map');
+  drawer = document.querySelector('#drawer');
 
   menu.addEventListener('click', function(e) {
   	drawer.classList.toggle('open');
@@ -407,7 +426,7 @@ $(document).ready(function () {
 	*/
 	var geoOptions = {
 		maximumAge: 5 * 60 * 1000,
-	}
+	};
 	initialize(geoOptions);
 
 });

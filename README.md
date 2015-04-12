@@ -1,26 +1,30 @@
 ## Neighborhood Map
-#### http://in-the-neighborhood.appspot.com/
 
-"In The Neighborhood" website displays nearby (using user's current coordinates if allowed or default location) cafe locations on Google map. It implements following functionalities:
+"In The Neighborhood" website displays nearby (using user's current coordinates if allowed or default location) cafe locations on Google map. User can filter the list of cafe's, get the details of particular cafe and view results for nearby cities as well.
 
-1. Lists cafe's in the form of markers on map as well as text in a list.
+#### Instructions:
 
-2. List can be viewed using hamburger icon on the page.
+ * Launch the application using following link:
+		#### http://in-the-neighborhood.appspot.com/
 
-3. List can be searched/filtered using search textbox. Filtered list also filters markers on map.
+ * Application will try to access user's current location to display results. If denied, it will display cafe results for 		Mountain View location.
 
-4. Clicking item in the list will display info about that place on Google map marker.
+ * You can filter the cafe's by clicking on hamburger icon, which displays the list of cafe's and a text box to filter list.
 
-5. It takes care of closing infoboxes when multiple items are clicked from the list.
+ * Filtering functionality filters both list and markers on map.
 
-6. Infobox provides details about cafe's name, address, phone (if any), reviews (if any), website url(if any)
+ * Filter functionality is case insensitive and can be performed for any part of string.
 
-7. Apart from default location user can search for cafe's in nearby cities by selecting  one under heading section.
+ * Details about cafe can be viewed by either click on name in the list or the marker, that displays infobox on map.
 
-8. Application takes care of updating map with new markers and list data.
+ * Infobox provides details about cafe's name, address, phone (if any), reviews (if any), website url(if any)
 
-9. Website render on-screen in a responsive manner accross devices.
+ * For small screen devices list automatically closes after the click on cafe name from the list.
 
+#### Tested on following Browsers:
+ * Chrome
+ * Firefox
+ * IE
 
 #### Implementation:
 Website is implemented using HTML, HTML5(Geolocation api), CSS, JavaScript, JQuery, External Api's (Google map, Foursquare and Geonames), Grunt (for minification) and Knockout.js(as MVVM)
